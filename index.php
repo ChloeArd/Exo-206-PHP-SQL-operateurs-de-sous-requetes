@@ -56,7 +56,18 @@ try {
     // 4
     $request = $bdd->prepare("
         SELECT username FROM user
-            WHERE EXISTS (SELECT * FROM article WHERE article.user_fk = user.id)
+            WHERE EXISTS (SELECT * FROM article WHERE article.user_fk > 1)
+");
+
+    $request->execute();
+    echo '<pre>';
+    print_r($request->fetchAll());
+    echo "</pre><br><br>";
+
+    // 5
+    $request = $bdd->prepare("
+        SELECT username FROM user
+            WHERE EXISTS (SELECT * FROM article WHERE article.user_fk = user.id AND user.username = 'jane')
 ");
 
     $request->execute();
