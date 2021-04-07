@@ -44,7 +44,7 @@ try {
     // 3
     $request = $bdd->prepare("
         SELECT username FROM user
-            WHERE id = ANY (SELECT user_fk FROM article WHERE contenu LIKE '%poterie')
+            WHERE id = ANY (SELECT user_fk FROM article WHERE contenu LIKE '%poterie%')
 ");
 
     $request->execute();
@@ -53,10 +53,10 @@ try {
         echo $user_data['username']. " parle de poterie dans un article <br>";
     }
 
-    // 4
+    // 4 Sélectionnez tous les utilisateurs ayant au moins écrit deux articles.
     $request = $bdd->prepare("
         SELECT username FROM user
-            WHERE EXISTS (SELECT * FROM article WHERE article.user_fk > 1)
+            WHERE id = ANY (SELECT user_fk FROM article HAVING count(user_fk) >= 2)
 ");
 
     $request->execute();
@@ -64,10 +64,10 @@ try {
     print_r($request->fetchAll());
     echo "</pre><br><br>";
 
-    // 5
+    // 5 Sélectionnez l'utilisateur Jane uniquement s'il elle a écris un article ( le résultat devrait être vide ! ).
     $request = $bdd->prepare("
-        SELECT username FROM user
-            WHERE EXISTS (SELECT * FROM article WHERE article.user_fk = user.id AND user.username = 'jane')
+        SELECT username FROM user WHERE username LIKE 'jane%'
+            AND id = ALL (SELECT user_fk FROM article)
 ");
 
     $request->execute();
